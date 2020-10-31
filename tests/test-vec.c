@@ -23,6 +23,27 @@ Test(vec, create_null_ff)
     free(ptr);
 }
 
+Test(vec, create_with_ff)
+{
+    struct s {
+        int a;
+        int b;
+    };
+
+    struct s* s_0 = malloc(sizeof(struct s));
+    struct s* s_1 = malloc(sizeof(struct s));
+
+    struct vec *v = vec_create(sizeof(struct s *), free);
+
+    vec_push_back(v, s_0);
+    vec_push_back(v, s_1);
+
+    vec_destroy(v);
+
+    // If the vector does not destroy the elements, this will cause a memory leak and
+    // ASAN will notice it
+}
+
 Test(vec, create_set_and_get)
 {
     struct vec *v = vec_create(sizeof(long), NULL);
