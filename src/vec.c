@@ -13,8 +13,11 @@ struct vec {
 	void *items;
 };
 
-inline size_t vec_size(struct vec *v)
+inline ssize_t vec_size(struct vec *v)
 {
+	if (!v)
+		return VEC_NULL;
+
 	return v->size;
 }
 
@@ -74,20 +77,30 @@ void vec_destroy(struct vec *v)
 	free(v);
 }
 
-static void extend_vec(struct vec *v)
+static int extend_vec(struct vec *v)
 {
 	v->cap *= 2;
 	v->items = realloc(v->items, v->cap * v->elm_size);
+
+	if (!v->items) {
+		free(v);
+		return VEC_MEM_ERR;
+	}
+
+	return VEC_OK;
 }
 
-void vec_push_back(struct vec *v, void *el)
+int vec_push_back(struct vec *v, void *el)
 {
 	if (v->size + 1 >= v->cap)
-		extend_vec(v);
+		if (extend_vec(v) != VEC_OK)
+			return VEC_MEM_ERR;
 
 	vec_set_inner(v, vec_size(v), el);
 
 	v->size++;
+
+	return VEC_OK;
 }
 
 void *vec_pop_back(struct vec *v)
@@ -97,6 +110,7 @@ void *vec_pop_back(struct vec *v)
 
 	void *last = vec_get(v, vec_size(v) - 1);
 	v->size--;
+
 	return last;
 }
 
