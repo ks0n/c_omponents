@@ -33,7 +33,7 @@ Test(vec, create_set_and_get)
 
     long a = (long) vec_get(v, 0);
 
-    cr_assert_eq(a, 4, "a equals %d", a);
+    cr_assert_eq(a, 4, "a equals %ld", a);
 
     vec_destroy(v);
 }

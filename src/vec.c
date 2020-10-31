@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "vec.h"
 
@@ -11,6 +12,11 @@ struct vec {
 	size_t elm_size;
 	void *items;
 };
+
+inline size_t vec_size(struct vec *v)
+{
+	return v->size;
+}
 
 struct vec *vec_create(size_t elm_size, vec_free_function elm_free)
 {
@@ -33,20 +39,29 @@ struct vec *vec_create(size_t elm_size, vec_free_function elm_free)
 	return v;
 }
 
-static uintptr_t vec_get_inner(struct vec *v, size_t i)
+static char *get_items_offset(struct vec *v, size_t i)
 {
 	char *elms = v->items;
+	elms += i * v->elm_size;
 
-	return (uintptr_t)(elms + i * v->elm_size);
+	return elms;
 }
 
-void vec_set_inner(struct vec *v, size_t i, uintptr_t value)
+static void *vec_get_inner(struct vec *v, size_t i)
 {
-	char *elms = v->items;
+	char *elms = get_items_offset(v, i);
 
-	uintptr_t *offset = (void *)(elms + i * v->elm_size);
+	void *value;
+	memcpy(&value, elms, v->elm_size);
 
-	*offset = value;
+	return value;
+}
+
+void vec_set_inner(struct vec *v, size_t i, void *value)
+{
+	char *elms = get_items_offset(v, i);
+
+	memcpy(elms, &value, v->elm_size);
 }
 
 void vec_destroy(struct vec *v)
@@ -63,8 +78,6 @@ static void extend_vec(struct vec *v)
 {
 	v->cap *= 2;
 	v->items = realloc(v->items, v->cap * v->elm_size);
-
-    // FIXME: Check for NULL
 }
 
 void vec_push_back(struct vec *v, void *el)
@@ -72,7 +85,7 @@ void vec_push_back(struct vec *v, void *el)
 	if (v->size + 1 >= v->cap)
 		extend_vec(v);
 
-	vec_set_inner(v, vec_size(v), (uintptr_t)el);
+	vec_set_inner(v, vec_size(v), el);
 
 	v->size++;
 }
@@ -93,9 +106,4 @@ void *vec_get(struct vec *v, size_t i)
 		return NULL;
 
 	return (void *)vec_get_inner(v, i);
-}
-
-inline size_t vec_size(struct vec *v)
-{
-	return v->size;
 }
