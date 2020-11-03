@@ -44,7 +44,7 @@ Test(vec, create_with_ff)
 	// ASAN will notice it
 }
 
-Test(vec, create_set_and_get)
+Test(vec, create_push_and_get)
 {
 	struct vec *v = vec_create(sizeof(long), NULL);
 
