@@ -24,7 +24,8 @@ struct vec;
  *
  * @param elm_size Size of each element contained in the vector
  * @param elm_free Function to use when freeing each element. NULL if the vector should
- *        not own any element and therefore not free them
+ *        not own - meaning, should take care of their memory - any element
+ *        and therefore not free them
  *
  * @return NULL on error, the newly created vector on success
  */
