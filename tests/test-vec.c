@@ -104,10 +104,10 @@ Test(vec, push_back_realloc)
 {
     struct vec *v = vec_create(sizeof(long), NULL);
 
-    for (size_t i = 0; i < 256; i++)
+    for (size_t i = 0; i < VEC_DEFAULT_CAP * 32; i++)
         vec_push_back(v, (void *) i);
 
-    for (ssize_t i = 255; i >= 0; i--)
+    for (ssize_t i = VEC_DEFAULT_CAP * 32 - 1; i >= 0; i--)
         cr_assert_eq((long) vec_pop_back(v), i);
 
     vec_destroy(v);
