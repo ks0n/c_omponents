@@ -23,7 +23,7 @@ Test(vec, create_null_free_func)
 	free(ptr);
 }
 
-Test(vec, create_with_ff)
+Test(vec, create_with_free_func)
 {
 	struct s {
 		int a;
