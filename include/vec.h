@@ -22,7 +22,7 @@ struct vec;
 /**
  * Create a new empty vector given the size of its elements
  *
- * @param elm_size Size of each element contained in the array
+ * @param elm_size Size of each element contained in the vector
  * @param elm_free Function to use when freeing each element. NULL if the vector should
  *        not own any element and therefore not free them
  *
