@@ -124,8 +124,3 @@ Test(vec, pop_back_non_existent)
 
     vec_destroy(v);
 }
-
-Test(vec, size_empty)
-{
-    cr_assert_eq(vec_size(NULL), VEC_NULL);
-}

@@ -18,12 +18,17 @@ unit_tests_src = [
   'tests/test-vec.c',
   ]
 
-criterion = dependency('criterion')
+if get_option('enable_tests')
+    criterion = dependency('criterion')
 
-unit_tests = executable('c_omponents-unit-tests',
-  src,
-  unit_tests_src,
-  dependencies: [criterion],
-  include_directories: inc)
+    unit_tests = executable('c_omponents-unit-tests',
+      src,
+      unit_tests_src,
+      dependencies: [criterion],
+      override_options: ['b_coverage=true'],
+      include_directories: inc)
 
-test('libc_omponents Unit Tests', unit_tests)
+    test('libc_omponents Unit Tests', unit_tests)
+else
+    warning('Tests are disabled. Run ``meson -Denable_tests=true``')
+endif
