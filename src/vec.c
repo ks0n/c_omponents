@@ -13,11 +13,8 @@ struct vec {
 	void *items;
 };
 
-inline ssize_t vec_size(struct vec *v)
+inline size_t vec_size(struct vec *v)
 {
-	if (!v)
-		return VEC_NULL;
-
 	return v->size;
 }
 

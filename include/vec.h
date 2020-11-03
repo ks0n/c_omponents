@@ -9,7 +9,6 @@
 typedef void (*vec_free_function)(void *);
 
 enum vector_state {
-    VEC_NULL = -2,
     VEC_MEM_ERR = -1,
     VEC_OK = 0,
 };
@@ -69,8 +68,8 @@ void* vec_get(struct vec *v, size_t i);
  *
  * @param v The vector to get the number of elements of
  *
- * @return The number of elements in the vector on success, VEC_NULL otherwise
+ * @return The number of elements in the vector on success
  */
-ssize_t vec_size(struct vec *v);
+size_t vec_size(struct vec *v);
 
 #endif /* ! VEC_H */
