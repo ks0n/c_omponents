@@ -9,8 +9,8 @@
 typedef void (*vec_free_function)(void *);
 
 enum vector_state {
-    VEC_NULL,
-    VEC_MEM_ERR,
+    VEC_NULL = -2,
+    VEC_MEM_ERR = -1,
     VEC_OK = 0,
 };
 
