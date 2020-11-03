@@ -9,7 +9,7 @@ Test(vec, create_null_empty_elm)
 	cr_assert_null(v);
 }
 
-Test(vec, create_null_ff)
+Test(vec, create_null_free_func)
 {
 	struct vec *v = vec_create(sizeof(int *), NULL);
 
