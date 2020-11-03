@@ -9,7 +9,7 @@ Test(vec, create_null_empty_elm)
 	cr_assert_null(v);
 }
 
-Test(vec, create_null_ff)
+Test(vec, create_null_free_func)
 {
 	struct vec *v = vec_create(sizeof(int *), NULL);
 
@@ -23,7 +23,7 @@ Test(vec, create_null_ff)
 	free(ptr);
 }
 
-Test(vec, create_with_ff)
+Test(vec, create_with_free_func)
 {
 	struct s {
 		int a;
@@ -44,7 +44,7 @@ Test(vec, create_with_ff)
 	// ASAN will notice it
 }
 
-Test(vec, create_set_and_get)
+Test(vec, create_push_and_get)
 {
 	struct vec *v = vec_create(sizeof(long), NULL);
 
