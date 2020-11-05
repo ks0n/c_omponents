@@ -12,7 +12,7 @@ src = [
   'src/vec.c',
   ]
 
-library('c_omponents', src, include_directories: inc)
+c_omponents_dep = library('c_omponents', src, include_directories: inc)
 
 unit_tests_src = [
   'tests/test-vec.c',
