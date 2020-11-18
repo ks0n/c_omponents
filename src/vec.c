@@ -3,14 +3,13 @@
 #include <string.h>
 
 #include "vec.h"
+#include "g_array.h"
 
 struct vec {
 	size_t size;
 	size_t cap;
 
-	vec_free_function elm_free;
-	size_t elm_size;
-	void *items;
+	struct g_array *array;
 };
 
 inline size_t vec_size(struct vec *v)
@@ -27,62 +26,40 @@ struct vec *vec_create(size_t elm_size, vec_free_function elm_free)
 	if (v == NULL)
 		return NULL;
 
-	v->elm_size = elm_size;
-	v->elm_free = elm_free;
+	struct g_array *a = g_array_create(elm_size, VEC_DEFAULT_CAP, elm_free);
+	if (!a) {
+		free(v);
+		return NULL;
+	}
+
+	v->array = a;
 	v->size = 0;
 	v->cap = VEC_DEFAULT_CAP;
-
-	v->items = malloc(v->cap * elm_size);
-	if (v->items == NULL)
-		return NULL;
 
 	return v;
 }
 
-static char *get_items_offset(struct vec *v, size_t i)
-{
-	char *elms = v->items;
-	elms += i * v->elm_size;
-
-	return elms;
-}
-
-static void *vec_get_inner(struct vec *v, size_t i)
-{
-	char *elms = get_items_offset(v, i);
-
-	void *value;
-	memcpy(&value, elms, v->elm_size);
-
-	return value;
-}
-
-void vec_set_inner(struct vec *v, size_t i, void *value)
-{
-	char *elms = get_items_offset(v, i);
-
-	memcpy(elms, &value, v->elm_size);
-}
-
 void vec_destroy(struct vec *v)
 {
-	for (size_t i = 0; i < v->size; i++)
-		if (v->elm_free)
-			v->elm_free(vec_get(v, i));
-
-	free(v->items);
+	g_array_destroy(v->array);
 	free(v);
 }
 
 static int extend_vec(struct vec *v)
 {
 	v->cap *= 2;
-	v->items = realloc(v->items, v->cap * v->elm_size);
 
-	if (!v->items) {
-		free(v);
+	struct g_array *old_array = v->array;
+	struct g_array *new_array =
+		g_array_create(old_array->elm_size, v->cap, old_array->free_fn);
+	if (!new_array) {
 		return VEC_MEM_ERR;
 	}
+
+	memcpy(new_array->items, old_array->items,
+	       old_array->cap * old_array->elm_size);
+
+	v->array = new_array;
 
 	return VEC_OK;
 }
@@ -93,7 +70,8 @@ int vec_push_back(struct vec *v, void *el)
 		if (extend_vec(v) != VEC_OK)
 			return VEC_MEM_ERR;
 
-	vec_set_inner(v, vec_size(v), el);
+	/* Cannot fail since we checked the size just before */
+	g_array_set(v->array, el, vec_size(v));
 
 	v->size++;
 
@@ -116,5 +94,5 @@ void *vec_get(struct vec *v, size_t i)
 	if (i >= v->size)
 		return NULL;
 
-	return (void *)vec_get_inner(v, i);
+	return g_array_get(v->array, i);
 }
