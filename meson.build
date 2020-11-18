@@ -9,7 +9,9 @@ project('c_omponents', 'c',
 inc = include_directories('include')
 
 src = [
+  'src/hmap.c',
   'src/vec.c',
+  'src/g_array.c',
   ]
 
 c_omponents_dep = library('c_omponents', src, include_directories: inc)
