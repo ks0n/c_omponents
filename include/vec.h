@@ -35,12 +35,18 @@ enum vector_state {
 size_t vec_size(void *vector);
 
 /**
- * Create a new empty vector given the size of its elements
+ * Set the free function for a vector to use. If this function is not called, or
+ * if the argument given to it is NULL, no entities will be free upon the vector's
+ * release
  *
- * @param elm_size Size of each element contained in the vector
- * @param elm_free Function to use when freeing each element. NULL if the vector should
- *        not own - meaning, should take care of their memory - any element
- *        and therefore not free them
+ * @param vector Vector properly initialize
+ * @param free_fn Free function for the vector to use on the elements when releasing
+ *        memory
+ */
+void vec_set_free_fn(void *vector, vec_free_function free_fn);
+
+/**
+ * Create a new empty vector given the size of its elements
  *
  * @return NULL on error, the newly created vector on success
  */

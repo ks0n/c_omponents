@@ -19,7 +19,13 @@ inline size_t vec_size(void *vector)
 	return v->size;
 }
 
-void *__g_i_v_create(vec_free_function elm_free, size_t elm_size)
+inline void vec_set_free_fn(void *vector, vec_free_function free_fn)
+{
+	struct __generic_inner_vec__ *v = vector;
+	v->free_fn = free_fn;
+}
+
+void *__g_i_v_create(size_t elm_size)
 {
 	struct __generic_inner_vec__ *v =
 		malloc(sizeof(struct __generic_inner_vec__));
@@ -35,7 +41,7 @@ void *__g_i_v_create(vec_free_function elm_free, size_t elm_size)
 	v->data = array;
 	v->size = 0;
 	v->cap = VEC_DEFAULT_CAP;
-	v->free_fn = elm_free;
+	v->free_fn = NULL;
 
 	return v;
 }

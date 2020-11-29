@@ -7,7 +7,7 @@ DEF_VEC(iptr_vec, int *)
 
 Test(lvec, create_null_free_func)
 {
-	struct iptr_vec *v = iptr_vec_create(NULL);
+	struct iptr_vec *v = iptr_vec_create();
 
 	int *ptr = malloc(sizeof(int));
 	*ptr = 12;
@@ -32,7 +32,8 @@ Test(lvec, create_with_free_func)
 	struct s *s_0 = malloc(sizeof(struct s));
 	struct s *s_1 = malloc(sizeof(struct s));
 
-	struct svec *v = svec_create(free);
+	struct svec *v = svec_create();
+        vec_set_free_fn(v, free);
 
 	svec_push_back(v, s_0);
 	svec_push_back(v, s_1);
@@ -48,7 +49,7 @@ DEF_VEC(lvec, long)
 
 Test(lvec, create_push_and_get)
 {
-	struct lvec *v = lvec_create(NULL);
+	struct lvec *v = lvec_create();
 
 	cr_assert_not_null(v);
 
@@ -66,7 +67,7 @@ Test(lvec, create_push_and_get)
 
 Test(lvec, get_first)
 {
-	struct lvec *v = lvec_create(NULL);
+	struct lvec *v = lvec_create();
 
 	lvec_push_back(v, 0);
 	lvec_push_back(v, 1);
@@ -81,7 +82,7 @@ Test(lvec, get_first)
 
 Test(lvec, get_n_th)
 {
-	struct lvec *v = lvec_create(NULL);
+	struct lvec *v = lvec_create();
 
 	lvec_push_back(v, 2);
 	lvec_push_back(v, 4);
@@ -100,7 +101,7 @@ Test(lvec, get_n_th)
 
 Test(lvec, set_first)
 {
-	struct lvec *v = lvec_create(NULL);
+	struct lvec *v = lvec_create();
 
 	lvec_push_back(v, 0);
 	lvec_push_back(v, 1);
@@ -124,7 +125,7 @@ Test(lvec, set_first)
 
 Test(lvec, set_n_th)
 {
-	struct lvec *v = lvec_create(NULL);
+	struct lvec *v = lvec_create();
 
 	lvec_push_back(v, 2);
 	lvec_push_back(v, 4);
@@ -151,7 +152,7 @@ DEF_VEC(ivec, int)
 
 Test(lvec, push_back_pop_back)
 {
-	struct ivec *v = ivec_create(NULL);
+	struct ivec *v = ivec_create();
 
 	ivec_push_back(v, 1);
 	ivec_push_back(v, 2);
@@ -169,7 +170,7 @@ Test(lvec, push_back_pop_back)
 
 Test(lvec, push_back_realloc)
 {
-	struct lvec *v = lvec_create(NULL);
+	struct lvec *v = lvec_create();
 
 	for (size_t i = 0; i < VEC_DEFAULT_CAP * 32; i++)
 		cr_assert_eq(lvec_push_back(v, i), VEC_OK);
@@ -186,7 +187,7 @@ Test(lvec, push_back_realloc)
 
 Test(lvec, pop_back_non_existent)
 {
-	struct lvec *v = lvec_create(NULL);
+	struct lvec *v = lvec_create();
 
 	long value = 1;
 
@@ -204,7 +205,7 @@ Test(lvec, pop_back_non_existent)
 
 Test(lvec, generic_macros)
 {
-	struct lvec *v = vec_create(lvec)(NULL);
+	struct lvec *v = vec_create(lvec)();
 
 	vec_push_back(lvec)(v, 10);
 	vec_push_back(lvec)(v, 11);
