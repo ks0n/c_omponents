@@ -5,94 +5,61 @@
 #include "vec.h"
 #include "g_array.h"
 
-struct vec {
+struct __generic_inner_vec__ {
 	size_t size;
 	size_t cap;
+	void **data;
 
-	struct g_array *array;
+	vec_free_function free_fn;
 };
 
-inline size_t vec_size(struct vec *v)
+static inline size_t vec_size(void *vector)
 {
+	struct __generic_inner_vec__ *v = vector;
 	return v->size;
 }
 
-struct vec *vec_create(size_t elm_size, vec_free_function elm_free)
+void *__g_i_v_create(vec_free_function elm_free, size_t elm_size)
 {
-	if (!elm_size)
-		return NULL;
-
-	struct vec *v = malloc(sizeof(struct vec));
+	struct __generic_inner_vec__ *v =
+		malloc(sizeof(struct __generic_inner_vec__));
 	if (v == NULL)
 		return NULL;
 
-	struct g_array *a = g_array_create(elm_size, VEC_DEFAULT_CAP, elm_free);
-	if (!a) {
+	void *array = malloc(elm_size * VEC_DEFAULT_CAP);
+	if (!array) {
 		free(v);
 		return NULL;
 	}
 
-	v->array = a;
+	v->data = array;
 	v->size = 0;
 	v->cap = VEC_DEFAULT_CAP;
+	v->free_fn = elm_free;
 
 	return v;
 }
 
-void vec_destroy(struct vec *v)
+void __g_i_v_destroy(void *v_void)
 {
-	g_array_destroy(v->array);
+	struct __generic_inner_vec__ *v = v_void;
+	if (v->free_fn)
+		for (size_t i = 0; i < vec_size(v); i++)
+			v->free_fn(v->data[i]);
+
+	free(v->data);
 	free(v);
 }
 
-static int extend_vec(struct vec *v)
+int __g_i_v_extend_vec(void *v_void, size_t elm_size)
 {
-	v->cap *= 2;
+	struct __generic_inner_vec__ *v = v_void;
+	v->cap *= VEC_DEFAULT_GROWTH;
 
-	struct g_array *old_array = v->array;
-	struct g_array *new_array =
-		g_array_create(old_array->elm_size, v->cap, old_array->free_fn);
-	if (!new_array) {
+	v->data = realloc(v->data, v->cap * elm_size);
+
+	if (!v->data)
 		return VEC_MEM_ERR;
-	}
-
-	memcpy(new_array->items, old_array->items,
-	       old_array->cap * old_array->elm_size);
-
-	v->array = new_array;
 
 	return VEC_OK;
-}
-
-int vec_push_back(struct vec *v, void *el)
-{
-	if (v->size + 1 >= v->cap)
-		if (extend_vec(v) != VEC_OK)
-			return VEC_MEM_ERR;
-
-	/* Cannot fail since we checked the size just before */
-	g_array_set(v->array, el, vec_size(v));
-
-	v->size++;
-
-	return VEC_OK;
-}
-
-void *vec_pop_back(struct vec *v)
-{
-	if (vec_size(v) == 0)
-		return NULL;
-
-	void *last = vec_get(v, vec_size(v) - 1);
-	v->size--;
-
-	return last;
-}
-
-void *vec_get(struct vec *v, size_t i)
-{
-	if (i >= v->size)
-		return NULL;
-
-	return g_array_get(v->array, i);
 }
