@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "vec.h"
-#include "g_array.h"
 
 struct __generic_inner_vec__ {
 	size_t size;
