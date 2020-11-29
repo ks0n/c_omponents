@@ -10,8 +10,8 @@
 /**
  * Generic vector implementation.
  *
- * In order to declare a generic vector, invoke the DEC_VEC(N, T) macro. To define
- * the "methods" of this vector, call DEF_VEC(N, T)
+ * In order to declare a generic vector, invoke the DEC_VEC(Vector Name, Stored Type)
+ * macro. To define the "methods" of this vector, call DEF_VEC(Vector Name, Stored Type)
  *
  * An example implementation would be the following:
  *
