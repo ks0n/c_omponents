@@ -13,7 +13,7 @@ struct __generic_inner_vec__ {
 	vec_free_function free_fn;
 };
 
-static inline size_t vec_size(void *vector)
+inline size_t vec_size(void *vector)
 {
 	struct __generic_inner_vec__ *v = vector;
 	return v->size;
