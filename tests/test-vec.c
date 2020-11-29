@@ -33,7 +33,7 @@ Test(lvec, create_with_free_func)
 	struct s *s_1 = malloc(sizeof(struct s));
 
 	struct svec *v = svec_create();
-        vec_set_free_fn(v, free);
+	vec_set_free_fn(v, free);
 
 	svec_push_back(v, s_0);
 	svec_push_back(v, s_1);
