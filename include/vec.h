@@ -9,8 +9,8 @@
 typedef void (*vec_free_function)(void *);
 
 enum vector_state {
-    VEC_MEM_ERR = -1,
-    VEC_OK = 0,
+	VEC_MEM_ERR = -1,
+	VEC_OK = 0,
 };
 
 /**
@@ -54,14 +54,14 @@ int vec_push_back(struct vec *v, void *el);
  *
  * @return The element on success, NULL otherwise
  */
-void* vec_pop_back(struct vec *v);
+void *vec_pop_back(struct vec *v);
 
 /**
  * Get an element from a vector at a given index
  *
  * @return The element on success, NULL otherwise
  */
-void* vec_get(struct vec *v, size_t i);
+void *vec_get(struct vec *v, size_t i);
 
 /**
  * Get the number of elements contained inside a vector
