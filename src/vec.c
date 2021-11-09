@@ -4,117 +4,67 @@
 
 #include "vec.h"
 
-struct vec {
+struct __generic_inner_vec__ {
 	size_t size;
 	size_t cap;
+	void **data;
 
-	vec_free_function elm_free;
-	size_t elm_size;
-	void *items;
+	vec_free_function free_fn;
 };
 
-inline size_t vec_size(struct vec *v)
+inline size_t vec_size(void *vector)
 {
+	struct __generic_inner_vec__ *v = vector;
 	return v->size;
 }
 
-struct vec *vec_create(size_t elm_size, vec_free_function elm_free)
+inline void vec_set_free_fn(void *vector, vec_free_function free_fn)
 {
-	if (!elm_size)
-		return NULL;
+	struct __generic_inner_vec__ *v = vector;
+	v->free_fn = free_fn;
+}
 
-	struct vec *v = malloc(sizeof(struct vec));
+void *__g_i_v_create(size_t elm_size)
+{
+	struct __generic_inner_vec__ *v =
+		malloc(sizeof(struct __generic_inner_vec__));
 	if (v == NULL)
 		return NULL;
 
-	v->elm_size = elm_size;
-	v->elm_free = elm_free;
+	void *array = malloc(elm_size * VEC_DEFAULT_CAP);
+	if (!array) {
+		free(v);
+		return NULL;
+	}
+
+	v->data = array;
 	v->size = 0;
 	v->cap = VEC_DEFAULT_CAP;
-
-	v->items = malloc(v->cap * elm_size);
-	if (v->items == NULL)
-		return NULL;
+	v->free_fn = NULL;
 
 	return v;
 }
 
-static char *get_items_offset(struct vec *v, size_t i)
+void __g_i_v_destroy(void *v_void)
 {
-	char *elms = v->items;
-	elms += i * v->elm_size;
+	struct __generic_inner_vec__ *v = v_void;
+	if (v->free_fn)
+		for (size_t i = 0; i < vec_size(v); i++)
+			v->free_fn(v->data[i]);
 
-	return elms;
-}
-
-static void *vec_get_inner(struct vec *v, size_t i)
-{
-	char *elms = get_items_offset(v, i);
-
-	void *value;
-	memcpy(&value, elms, v->elm_size);
-
-	return value;
-}
-
-void vec_set_inner(struct vec *v, size_t i, void *value)
-{
-	char *elms = get_items_offset(v, i);
-
-	memcpy(elms, &value, v->elm_size);
-}
-
-void vec_destroy(struct vec *v)
-{
-	for (size_t i = 0; i < v->size; i++)
-		if (v->elm_free)
-			v->elm_free(vec_get(v, i));
-
-	free(v->items);
+	free(v->data);
 	free(v);
 }
 
-static int extend_vec(struct vec *v)
+int __g_i_v_extend_vec(void *v_void, size_t elm_size)
 {
-	v->cap *= 2;
-	v->items = realloc(v->items, v->cap * v->elm_size);
+	struct __generic_inner_vec__ *v = v_void;
+	v->cap *= VEC_DEFAULT_GROWTH;
 
-	if (!v->items) {
-		free(v);
+	v->data = realloc(v->data, v->cap * elm_size);
+
+	if (!v->data)
 		return VEC_MEM_ERR;
-	}
 
 	return VEC_OK;
-}
-
-int vec_push_back(struct vec *v, void *el)
-{
-	if (v->size + 1 >= v->cap)
-		if (extend_vec(v) != VEC_OK)
-			return VEC_MEM_ERR;
-
-	vec_set_inner(v, vec_size(v), el);
-
-	v->size++;
-
-	return VEC_OK;
-}
-
-void *vec_pop_back(struct vec *v)
-{
-	if (vec_size(v) == 0)
-		return NULL;
-
-	void *last = vec_get(v, vec_size(v) - 1);
-	v->size--;
-
-	return last;
-}
-
-void *vec_get(struct vec *v, size_t i)
-{
-	if (i >= v->size)
-		return NULL;
-
-	return (void *)vec_get_inner(v, i);
 }
